@@ -20,4 +20,4 @@ the function should return a collection with items "uninstall information" and "
 
 * Example case.
 * All folder names start with starting letter.
-* Complicated folder structure. (***My solution fails on this one, I'm still trying to figure out why***)
+* Complicated folder structure.

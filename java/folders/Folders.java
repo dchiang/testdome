@@ -6,13 +6,34 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.InputSource;
 
 public class Folders {
+
+    public static void addFolderName(Node node, Collection<String> folderNames, char startingLetter){
+      if(node.getNodeName() == "folder" && node.hasAttributes()){
+        Node nameAttribute = node.getAttributes().getNamedItem("name");
+        if(nameAttribute != null){
+          String name = nameAttribute.getNodeValue();
+          if(name.charAt(0) == startingLetter){
+            folderNames.add(name);
+          }
+        }
+      }
+    }
+
+    public static void searchLetter(NodeList childrens, Collection<String> folderNames, char startingLetter){
+      for(int i = 0; i < childrens.getLength(); i++){
+        Node node = childrens.item(i);
+        addFolderName(node, folderNames, startingLetter);
+        if(node.hasChildNodes()){
+          searchLetter(node.getChildNodes(), folderNames, startingLetter);
+        }
+      }
+    }
+
     public static Collection<String> folderNames(String xml, char startingLetter) throws Exception {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       DocumentBuilder builder = factory.newDocumentBuilder();
@@ -23,31 +44,9 @@ public class Folders {
 
       Collection<String> folderNames = new ArrayList<String>();
       Node node = document.getDocumentElement();
-      while (node != null){
-        if(node.getNodeName() == "folder" && node.hasAttributes()){
-          Node nameAttribute = node.getAttributes().getNamedItem("name");
-          if(nameAttribute != null){
-            String name = nameAttribute.getNodeValue();
-            if(name.charAt(0) == startingLetter){
-              folderNames.add(name);
-            }
-          }
-        }
-        if(node.hasChildNodes()){
-          node = node.getFirstChild();
-        }else{
-          Node tmp = node.getNextSibling();
-          if(tmp != null){
-            node = tmp;
-          } else {
-            tmp = node.getParentNode();
-            if(tmp != null){
-              node = tmp.getNextSibling();
-            }else{
-              node = null;
-            }
-          }
-        }
+      addFolderName(node, folderNames, startingLetter);
+      if(node.hasChildNodes()){
+        searchLetter(node.getChildNodes(), folderNames, startingLetter);
       }
       return folderNames;
     }
