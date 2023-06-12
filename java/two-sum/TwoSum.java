@@ -5,10 +5,10 @@ public class TwoSum {
         Map<Integer, Integer> complements = new HashMap<>();
         for(int i = 0; i < list.length; i++){
           int complement = sum - list[i];
-          if(complements.containsKey(complement)){
-            return new int[]{i, complements.get(complement)};
+          if(complements.containsKey(list[i])){
+            return new int[]{i, complements.get(list[i])};
           } else {
-            complements.put(list[i],i);
+            complements.put(complement,i);
           }
         }
         return null;
